@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+:root{
+  --ink:        #1B1B18;
+  --brass:      #C08A3E;
+  --brass-dim:  #8C6530;
+  --brass-light:#D49B4F;
+  --paper:      #EFEAE1;
+  --paper-2:    #E4DDCF;
+  --text-dark:  #201F1C;
+  --text-mute:  #6B665C;
+  --text-light: #F3EFE7;
+  --line:       #D8D0C0;
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-brass: var(--brass);
+  --color-brass-dim: var(--brass-dim);
+  --color-brass-light: var(--brass-light);
+  --color-paper: var(--paper);
+  --color-paper-2: var(--paper-2);
+  --color-text-dark: var(--text-dark);
+  --color-text-mute: var(--text-mute);
+  --color-text-light: var(--text-light);
+  --color-line: var(--line);
+  --font-head: 'Cairo', sans-serif;
+  --font-body: 'IBM Plex Sans Arabic', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body{
+  background: var(--paper);
+  color: var(--text-dark);
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+}
+h1,h2,h3,h4{ font-family: 'Cairo', sans-serif; }
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation: none !important; transition: none !important; }
+}
