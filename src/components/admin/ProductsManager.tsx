@@ -210,8 +210,8 @@ export default function ProductsManager({
           ما في أصناف بهالقسم لهلق. ابدأ بإضافة أول صنف.
         </div>
       ) : (
-        <div className="border border-line rounded-md overflow-hidden">
-          <table className="w-full text-sm border-collapse">
+        <div className="border border-line rounded-md overflow-x-auto">
+          <table className="w-full min-w-[520px] text-sm border-collapse">
             <thead>
               <tr className="text-right bg-paper-2 text-text-mute">
                 <th className="py-3 px-4 font-semibold">الصنف</th>
