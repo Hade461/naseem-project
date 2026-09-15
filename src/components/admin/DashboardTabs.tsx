@@ -44,7 +44,7 @@ export default function DashboardTabs({
         </button>
       </div>
 
-      {tab === "products" ? <ProductsManager initialProducts={products} /> : <MessagesList initialMessages={messages} />}
+      {tab === "products" ? <ProductsManager category={"" as any} products={products} onChanged={() => {}} /> : <MessagesList messages={messages} onChanged={() => {}} />}
     </div>
   );
 }
