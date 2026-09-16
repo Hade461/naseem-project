@@ -8,14 +8,14 @@ export default function ProductCard({ product }: { product: Product }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
         ) : (
-          <span className="font-[Cairo] font-black text-2xl text-line">النسيم</span>
+          <span className="text-4xl">🧺</span>
         )}
       </div>
       <div className="p-4">
         <h4 className="font-bold text-[1rem]">{product.name}</h4>
         <div className="text-text-mute text-[.8rem] mt-0.5">{categoryLabel(product.category)}</div>
         <div className="flex items-center justify-between mt-3.5">
-          <span className="font-[Cairo] font-extrabold text-brass-dim text-[1.05rem]">{product.price.toLocaleString("en-US")} ل.س</span>
+          <span className="font-[Cairo] font-extrabold text-brass-dim text-[1.05rem]">{product.price}$</span>
           <span className={`text-[.75rem] ${product.in_stock ? "text-[#5C7A5A]" : "text-[#A34C3F]"}`}>
             {product.in_stock ? "متوفر" : "غير متوفر حالياً"}
           </span>

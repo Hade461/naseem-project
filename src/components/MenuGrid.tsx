@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { CATEGORIES, Product } from "@/lib/types";
 import ProductCard from "@/components/ProductCard";
@@ -9,6 +9,10 @@ export default function MenuGrid({ products }: { products: Product[] }) {
   const searchParams = useSearchParams();
   const initialCat = searchParams.get("cat") ?? "all";
   const [active, setActive] = useState(initialCat);
+
+  useEffect(() => {
+    setActive(searchParams.get("cat") ?? "all");
+  }, [searchParams]);
 
   const filters = [{ id: "all", label: "الكل" }, ...CATEGORIES];
 

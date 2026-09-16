@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import { createClient } from "@/lib/supabase/client";
 import { logout } from "@/app/admin/actions";
+import { CATEGORIES, Category, Product } from "@/lib/types";
 import ProductsManager from "./ProductsManager";
 import MessagesList from "./MessagesList";
-import { CATEGORIES, Category, Product } from "@/lib/types";
 
 type Message = {
   id: string;
@@ -18,15 +18,6 @@ type Message = {
 
 type View = "overview" | Category | "messages";
 
-function StatCard({ value, label, accent }: { value: number; label: string; accent?: boolean }) {
-  return (
-    <div className="bg-white border border-line rounded-sm p-5 text-center">
-      <div className={`font-[Cairo] font-black text-3xl ${accent ? "text-brass-dim" : "text-ink"}`}>{value}</div>
-      <div className="text-text-mute text-sm mt-1">{label}</div>
-    </div>
-  );
-}
-
 export default function AdminShell({
   email,
   initialProducts,
@@ -36,21 +27,35 @@ export default function AdminShell({
   initialProducts: Product[];
   initialMessages: Message[];
 }) {
+  const supabase = createClient();
   const [view, setView] = useState<View>("overview");
-  const [navOpen, setNavOpen] = useState(false);
-  const products = initialProducts;
-  const messages = initialMessages;
-  const inStock = products.filter((p) => p.in_stock).length;
+  const [products, setProducts] = useState(initialProducts);
+  const [messages, setMessages] = useState(initialMessages);
 
-  function goTo(v: View) {
-    setView(v);
-    setNavOpen(false);
+  async function refreshProducts() {
+    const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
+    setProducts((data ?? []) as Product[]);
   }
+
+  async function refreshMessages() {
+    const { data } = await supabase.from("messages").select("*").order("created_at", { ascending: false });
+    setMessages(data ?? []);
+  }
+
+  const inStock = products.filter((p) => p.in_stock).length;
+  const outOfStock = products.length - inStock;
+
+  const [navOpen, setNavOpen] = useState(false);
 
   const navItemClass = (active: boolean) =>
     `w-full text-right px-4 py-2.5 rounded-sm text-sm font-semibold transition-colors ${
       active ? "bg-brass text-ink" : "text-white/75 hover:bg-white/10 hover:text-text-light"
     }`;
+
+  function goTo(v: View) {
+    setView(v);
+    setNavOpen(false);
+  }
 
   const sidebarContent = (
     <>
@@ -89,15 +94,12 @@ export default function AdminShell({
       </nav>
 
       <div className="px-3 py-5 border-t border-white/10 space-y-3">
-        <Link href="/" target="_blank" className="block px-4 py-2 text-xs text-white/50 hover:text-brass">
+        <a href="/" target="_blank" className="block px-4 py-2 text-xs text-white/50 hover:text-brass">
           مشاهدة الموقع ↗
-        </Link>
+        </a>
         <div className="px-4 text-xs text-white/40 truncate">{email}</div>
         <form action={logout}>
-          <button
-            type="submit"
-            className="w-full px-4 py-2.5 rounded-sm text-sm font-semibold border border-white/20 text-white/80 hover:border-[#A34C3F] hover:text-[#e2a89c]"
-          >
+          <button type="submit" className="w-full px-4 py-2.5 rounded-sm text-sm font-semibold border border-white/20 text-white/80 hover:border-[#A34C3F] hover:text-[#e2a89c]">
             تسجيل الخروج
           </button>
         </form>
@@ -120,7 +122,12 @@ export default function AdminShell({
       </div>
 
       {/* Mobile overlay */}
-      {navOpen && <div onClick={() => setNavOpen(false)} className="md:hidden fixed inset-0 bg-black/50 z-40" />}
+      {navOpen && (
+        <div
+          onClick={() => setNavOpen(false)}
+          className="md:hidden fixed inset-0 bg-black/50 z-40"
+        />
+      )}
 
       {/* Sidebar: static on desktop, slide-in drawer on mobile */}
       <aside
@@ -135,36 +142,49 @@ export default function AdminShell({
       <main className="flex-1 p-5 pt-20 md:p-10 md:pt-10 max-w-[1000px] w-full min-w-0">
         {view === "overview" && (
           <div>
-            <div className="bg-ink text-text-light rounded-sm p-7 mb-7">
-              <h2 className="font-[Cairo] font-black text-xl">أهلاً فيك 👋</h2>
-              <p className="text-white/65 text-sm mt-1.5">هاد ملخص سريع عن متجر النسيم اليوم.</p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <StatCard value={inStock} label="متوفر حالياً" accent />
-              <StatCard value={products.length} label="كل الأصناف" />
-              <StatCard value={messages.length} label="الرسائل" />
-              <StatCard value={products.length - inStock} label="غير متوفر" />
-            </div>
-          </div>
-        )}
+            <h1 className="text-2xl font-bold">أهلاً فيك 👋</h1>
+            <p className="text-text-mute mt-1.5">هاد ملخص سريع عن متجر النسيم اليوم.</p>
 
-        {CATEGORIES.map(
-          (c) =>
-            view === c.id && (
-              <div key={c.id}>
-                <h2 className="font-[Cairo] font-black text-xl mb-6">{c.label}</h2>
-                <ProductsManager initialProducts={products} categoryFilter={c.id} />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              <StatCard label="كل الأصناف" value={products.length} />
+              <StatCard label="متوفر حالياً" value={inStock} accent />
+              <StatCard label="غير متوفر" value={outOfStock} />
+              <StatCard label="الرسائل" value={messages.length} />
+            </div>
+
+            <div className="mt-10 bg-white border border-line rounded-md p-6">
+              <h3 className="font-bold mb-1">وين تبدأ؟</h3>
+              <p className="text-text-mute text-sm mb-4">اختار قسم من القائمة الجانبية حتى تضيف أو تعدل أصنافه، أو افتح الرسائل لتشوف آخر استفسارات الزبائن.</p>
+              <div className="flex flex-wrap gap-2.5">
+                {CATEGORIES.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => setView(c.id)}
+                    className="px-4 py-2 text-sm font-semibold rounded-sm border border-line hover:border-ink"
+                  >
+                    {c.label}
+                  </button>
+                ))}
               </div>
-            )
-        )}
-
-        {view === "messages" && (
-          <div>
-            <h2 className="font-[Cairo] font-black text-xl mb-6">الرسائل</h2>
-            <MessagesList initialMessages={messages} />
+            </div>
           </div>
         )}
+
+        {view !== "overview" && view !== "messages" && (
+          <ProductsManager category={view} products={products} onChanged={refreshProducts} />
+        )}
+
+        {view === "messages" && <MessagesList messages={messages} onChanged={refreshMessages} />}
       </main>
+    </div>
+  );
+}
+
+function StatCard({ label, value, accent }: { label: string; value: number; accent?: boolean }) {
+  return (
+    <div className="bg-white border border-line rounded-md p-5">
+      <div className={`text-3xl font-[Cairo] font-black ${accent ? "text-brass-dim" : "text-ink"}`}>{value}</div>
+      <div className="text-text-mute text-sm mt-1">{label}</div>
     </div>
   );
 }
