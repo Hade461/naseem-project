@@ -4,22 +4,23 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES, Category, Product, categoryLabel } from "@/lib/types";
 
-const emptyForm = {
-  id: "",
-  name: "",
-  category: "hand-tools" as Category,
-  price: "",
-  in_stock: true,
-};
-
-export default function ProductsManager({ initialProducts }: { initialProducts: Product[] }) {
+export default function ProductsManager({
+  initialProducts,
+  categoryFilter,
+}: {
+  initialProducts: Product[];
+  categoryFilter?: Category;
+}) {
   const supabase = createClient();
   const [products, setProducts] = useState<Product[]>(initialProducts);
+  const emptyForm = { id: "", name: "", category: categoryFilter ?? ("hand-tools" as Category), price: "", in_stock: true };
   const [form, setForm] = useState(emptyForm);
   const [file, setFile] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+
+  const visibleProducts = categoryFilter ? products.filter((p) => p.category === categoryFilter) : products;
 
   async function refresh() {
     const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
@@ -182,7 +183,7 @@ export default function ProductsManager({ initialProducts }: { initialProducts: 
             </tr>
           </thead>
           <tbody>
-            {products.map((p) => (
+            {visibleProducts.map((p) => (
               <tr key={p.id} className="border-b border-line">
                 <td className="py-3 pl-3 font-semibold flex items-center gap-2.5">
                   {p.image_url ? (
@@ -206,8 +207,8 @@ export default function ProductsManager({ initialProducts }: { initialProducts: 
                 </td>
               </tr>
             ))}
-            {products.length === 0 && (
-              <tr><td colSpan={5} className="py-8 text-center text-text-mute">ما في أصناف مضافة لهلق.</td></tr>
+            {visibleProducts.length === 0 && (
+              <tr><td colSpan={5} className="py-8 text-center text-text-mute">ما في أصناف مضافة بهالقسم لهلق.</td></tr>
             )}
           </tbody>
         </table>
