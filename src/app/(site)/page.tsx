@@ -18,6 +18,18 @@ export default async function HomePage() {
   return (
     <main>
       <section className="bg-ink text-text-light py-24 md:py-28 relative overflow-hidden">
+        <svg
+          className="absolute inset-0 opacity-40 pointer-events-none hidden md:block"
+          viewBox="0 0 1120 420" preserveAspectRatio="xMaxYMid slice"
+          aria-hidden="true"
+        >
+          <g stroke="#C08A3E" strokeWidth="1.2" fill="none">
+            <circle cx="920" cy="120" r="80" />
+            <circle cx="1010" cy="260" r="120" />
+            <path d="M780 40 L780 340" strokeDasharray="4 6" />
+            <rect x="860" y="200" width="70" height="90" rx="6" />
+          </g>
+        </svg>
         <div className="max-w-[1120px] mx-auto px-6 relative z-10">
           <div className="w-[46px] h-[3px] bg-brass mb-5" />
           <h1 className="font-[Cairo] font-black text-[2.3rem] md:text-[3.6rem] leading-tight max-w-[14ch]">

@@ -21,13 +21,21 @@ export default async function ContactPage({
           <div>
             <h3 className="text-[1.2rem] mb-4.5 font-bold">معلومات التواصل</h3>
             {[
-              { ic: "📍", t: "العنوان", d: "(بيتم تحديد عنوان المحل هون)" },
-              { ic: "📞", t: "الهاتف", d: "(بيتم تحديد رقم الهاتف هون)" },
-              { ic: "🕒", t: "أوقات الدوام", d: "يومياً من 9 صباحاً حتى 9 مساءً" },
-              { ic: "✉️", t: "البريد الإلكتروني", d: "(بيتم تحديده هون)" },
+              { t: "العنوان", d: "(بيتم تحديد عنوان المحل هون)",
+                icon: <path d="M12 21s-7-6.2-7-11a7 7 0 1 1 14 0c0 4.8-7 11-7 11Z M12 13a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" /> },
+              { t: "الهاتف", d: "(بيتم تحديد رقم الهاتف هون)",
+                icon: <path d="M6.6 10.8c1.2 2.4 3.2 4.4 5.6 5.6l1.9-1.9c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.5.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.7 21 3 13.3 3 4c0-.6.4-1 1-1h3.1c.6 0 1 .4 1 1 0 1.2.2 2.4.6 3.5.1.4 0 .8-.2 1L6.6 10.8Z" /> },
+              { t: "أوقات الدوام", d: "يومياً من 9 صباحاً حتى 9 مساءً",
+                icon: <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></> },
+              { t: "البريد الإلكتروني", d: "(بيتم تحديده هون)",
+                icon: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></> },
             ].map((it) => (
               <div key={it.t} className="flex gap-3.5 py-4 border-b border-line">
-                <div className="w-9.5 h-9.5 rounded-full bg-ink text-brass flex items-center justify-center shrink-0">{it.ic}</div>
+                <div className="w-9.5 h-9.5 rounded-full bg-ink text-brass flex items-center justify-center shrink-0">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    {it.icon}
+                  </svg>
+                </div>
                 <div>
                   <h4 className="text-[.95rem] font-bold">{it.t}</h4>
                   <p className="text-text-mute text-sm mt-0.5">{it.d}</p>
